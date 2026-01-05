@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITUNA SCHOOL GP - Advanced Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#5D5CDE', secondary: '#4F46E5', accent: '#F59E0B' }
+                }
+            }
+        }
+    </script>
+    <style>
+        .online-indicator::after { content: ''; position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #10b981; border-radius: 50%; border: 2px solid white; }
+        .modal-backdrop { backdrop-filter: blur(5px); }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+
+<div id="app" class="min-h-screen flex flex-col">
+
+    <div id="landingPage" class="flex-grow flex items-center justify-center p-4">
+        <div class="max-w-6xl w-full">
+            <div class="text-center mb-12">
+                <div class="inline-block p-4 rounded-full bg-primary/10 mb-4">
+                    <i class="fas fa-graduation-cap text-primary text-5xl"></i>
+                </div>
+                <h1 class="text-5xl font-extrabold mb-2 tracking-tight">ITUNA SCHOOL GP</h1>
+                <p class="text-xl text-gray-500">Advanced Digital Learning Environment</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all p-8 border-t-4 border-primary group">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
+                            <i class="fas fa-user-graduate text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-6">Student Portal</h2>
+                        <div class="space-y-3">
+                            <button onclick="showLoginModal('student')" class="w-full py-3 px-4 bg-primary hover:bg-secondary text-white rounded-lg font-semibold shadow-md transition-transform active:scale-95">Login</button>
+                            <button onclick="showStudentRegister()" class="w-full py-3 px-4 bg-white border-2 border-primary text-primary hover:bg-gray-50 rounded-lg font-semibold transition-transform active:scale-95">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all p-8 border-t-4 border-green-500 group">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-500 group-hover:text-white transition-colors">
+                            <i class="fas fa-chalkboard-teacher text-green-600 text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-6">Teacher Portal</h2>
+                        <div class="space-y-3">
+                            <button onclick="showTeacherAccess()" class="w-full py-3 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold shadow-md transition-transform active:scale-95">
+                                <i class="fas fa-key mr-2"></i>Staff Access
+                            </button>
+                            <p class="text-xs text-gray-400 mt-2">Requires Master Access Code</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all p-8 border-t-4 border-red-500 group">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                            <i class="fas fa-user-shield text-red-600 text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-6">Admin Control</h2>
+                        <button onclick="showLoginModal('admin')" class="w-full py-3 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold shadow-md transition-transform active:scale-95">Admin Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainDashboard" class="hidden flex-col h-screen">
+        <nav class="bg-white dark:bg-gray-800 shadow-md z-30 px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="bg-primary text-white p-2 rounded-lg font-bold">GP</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">ITUNA SCHOOL</h1>
+                    <p id="navUserInfo" class="text-xs text-gray-500">Guest</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-xs font-medium"><span id="activeCount">0</span> Online</span>
+                </div>
+                <button onclick="logout()" class="text-gray-500 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt fa-lg"></i></button>
+            </div>
+        </nav>
+
+        <div class="flex flex-1 overflow-hidden">
+            <aside class="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+                <div class="p-4 space-y-2">
+                    <button onclick="switchTab('news')" id="tab-news" class="w-full text-left px-4 py-3 rounded-lg bg-primary text-white shadow-md transition-all">
+                        <i class="fas fa-newspaper w-6"></i> News
+                    </button>
+                    <button onclick="switchTab('resources')" id="tab-resources" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
+                        <i class="fas fa-folder-open w-6"></i> Resources
+                    </button>
+                    <button onclick="switchTab('active')" id="tab-active" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
+                        <i class="fas fa-users w-6"></i> Active Students
+                    </button>
+                    <div id="adminControls" class="hidden pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+                        <p class="px-4 text-xs font-bold text-gray-400 uppercase mb-2">Administration</p>
+                        <button onclick="switchTab('admin-classes')" id="tab-admin-classes" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
+                            <i class="fas fa-school w-6"></i> Class Management
+                        </button>
+                        <button onclick="switchTab('admin-users')" id="tab-admin-users" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
+                            <i class="fas fa-users-cog w-6"></i> User Manager
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="flex-1 overflow-y-auto p-8 bg-gray-100 dark:bg-gray-900 relative">
+                
+                <div id="view-news" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-3xl font-bold">School News</h2>
+                        <button id="btnPostNews" onclick="openNewsModal()" class="hidden px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary"><i class="fas fa-plus mr-2"></i>Post News</button>
+                    </div>
+                    <div id="newsFeed" class="grid gap-6"></div>
+                </div>
+
+                <div id="view-resources" class="hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-3xl font-bold">Learning Resources</h2>
+                        <div class="flex gap-2">
+                             <input type="text" id="searchRes" onkeyup="renderResources()" placeholder="Search files..." class="px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700">
+                             <button id="btnUploadRes" onclick="document.getElementById('fileUploadInput').click()" class="hidden px-4 py-2 bg-primary text-white rounded-lg"><i class="fas fa-upload mr-2"></i>Upload</button>
+                             <input type="file" id="fileUploadInput" class="hidden" onchange="handleFileUpload(this)">
+                        </div>
+                    </div>
+                    <div id="resourceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <div id="view-active" class="hidden space-y-6">
+                    <h2 class="text-3xl font-bold">Active Students</h2>
+                    <div id="activeStudentsContainer" class="grid gap-6"></div>
+                </div>
+
+                <div id="view-admin-classes" class="hidden space-y-6">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold">Class Management</h2>
+                                <p class="text-gray-500 text-sm">Create classes and set access passwords</p>
+                            </div>
+                            <button onclick="openClassModal()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow"><i class="fas fa-plus mr-2"></i>Add New Class</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 uppercase text-xs">
+                                    <tr>
+                                        <th class="px-6 py-3">Class Name</th>
+                                        <th class="px-6 py-3">Access Password</th>
+                                        <th class="px-6 py-3">Student Count</th>
+                                        <th class="px-6 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-admin-users" class="hidden space-y-6">
+                    <h2 class="text-3xl font-bold">User Management</h2>
+                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                                    <th class="px-6 py-3 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="teacherAccessModal" class="hidden fixed inset-0 z-50 modal-backdrop bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-8 transform transition-all">
+            <div class="text-center mb-6">
+                <i class="fas fa-lock text-4xl text-green-500 mb-4"></i>
+                <h3 class="text-2xl font-bold">Staff Access</h3>
+                <p class="text-gray-500">Enter the Master Code to proceed</p>
+            </div>
+            
+            <div id="teacherStep1">
+                <input type="password" id="teacherMasterCode" placeholder="Enter Code (e.g., teacher2025)" class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-500 mb-4 dark:bg-gray-700 dark:border-gray-600">
+                <button onclick="verifyTeacherCode()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition">Verify Access</button>
+            </div>
+
+            <div id="teacherStep2" class="hidden space-y-4">
+                <div class="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg text-center text-green-700 dark:text-green-300 text-sm mb-4">
+                    <i class="fas fa-check-circle mr-1"></i> Access Granted
+                </div>
+                <input type="text" id="teacherName" placeholder="Your Full Name" class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600">
+                <input type="text" id="teacherSubject" placeholder="Teaching Subject (e.g. Math)" class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600">
+                <button onclick="completeTeacherLogin()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition">Enter Portal</button>
+            </div>
+            <button onclick="closeModals()" class="mt-4 text-sm text-gray-500 w-full hover:text-gray-700">Cancel</button>
+        </div>
+    </div>
+
+    <div id="studentRegModal" class="hidden fixed inset-0 z-50 modal-backdrop bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-8">
+            <h3 class="text-2xl font-bold mb-6 text-center text-primary">Student Registration</h3>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="regName" placeholder="First Name" class="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    <input type="text" id="regSurname" placeholder="Surname" class="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                </div>
+                <input type="text" id="regUsername" placeholder="Create Username" class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                <input type="password" id="regPassword" placeholder="Create Password" class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <label class="block text-sm font-bold mb-2">Select Your Class</label>
+                    <select id="regClassSelect" class="w-full px-4 py-2 border rounded-lg mb-2 dark:bg-gray-700 dark:border-gray-600">
+                        </select>
+                    <input type="password" id="regClassPassword" placeholder="Enter Class Access Password" class="w-full px-4 py-2 border-2 border-primary/30 rounded-lg focus:border-primary dark:bg-gray-700 dark:border-gray-600">
+                    <p class="text-xs text-gray-500 mt-1">* Ask your teacher for the class password</p>
+                </div>
+
+                <button onclick="registerStudent()" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 rounded-lg transition mt-4">Complete Registration</button>
+                <button onclick="closeModals()" class="w-full text-gray-500 mt-2">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="hidden fixed inset-0 z-50 modal-backdrop bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm p-8">
+            <h3 id="loginTitle" class="text-2xl font-bold mb-6 text-center">Login</h3>
+            <div class="space-y-4">
+                <input type="text" id="loginUser" placeholder="Username" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                <input type="password" id="loginPass" placeholder="Password" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                <button onclick="processLogin()" class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:opacity-90 transition">Login</button>
+                <button onclick="closeModals()" class="w-full text-gray-500">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="classModal" class="hidden fixed inset-0 z-50 modal-backdrop bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm p-8">
+            <h3 class="text-xl font-bold mb-4">Manage Class</h3>
+            <input type="hidden" id="classId">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-bold">Class Name</label>
+                    <input type="text" id="classNameInput" placeholder="e.g. Grade 12A" class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700">
+                </div>
+                <div>
+                    <label class="text-sm font-bold text-red-500">Class Password</label>
+                    <input type="text" id="classPassInput" placeholder="Set password for students" class="w-full px-4 py-2 border border-red-200 rounded-lg dark:bg-gray-700">
+                </div>
+                <button onclick="saveClass()" class="w-full bg-green-500 text-white font-bold py-2 rounded-lg">Save Class</button>
+                <button onclick="closeModals()" class="w-full text-gray-500">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="newsModal" class="hidden fixed inset-0 z-50 modal-backdrop bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg p-6">
+            <h3 class="text-xl font-bold mb-4">Post News Update</h3>
+            <input type="text" id="newsTitle" placeholder="Title" class="w-full mb-3 px-4 py-2 border rounded dark:bg-gray-700">
+            <textarea id="newsBody" rows="4" placeholder="Content..." class="w-full mb-3 px-4 py-2 border rounded dark:bg-gray-700"></textarea>
+            <div class="flex gap-2">
+                <button onclick="postNews()" class="flex-1 bg-primary text-white py-2 rounded">Post</button>
+                <button onclick="closeModals()" class="flex-1 bg-gray-200 text-gray-800 py-2 rounded">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- STATE MANAGEMENT ---
+    
+    // Core Data
+    let currentUser = null; // { id, name, role, classId }
+    
+    // Initial Classes (Admin can edit these)
+    let classes = [
+        { id: 1, name: "Grade 8", password: "g8" },
+        { id: 2, name: "Grade 9", password: "g9" },
+        { id: 3, name: "Grade 10", password: "g10" },
+        { id: 4, name: "Grade 11", password: "g11" },
+        { id: 5, name: "Grade 12", password: "g12" }
+    ];
+
+    let users = [
+        { id: 1, username: "admin", password: "0#9#7#", role: "admin", name: "Administrator" }
+    ];
+
+    let news = [
+        { id: 1, title: "Welcome Back", content: "School starts on Monday at 07:30.", author: "Admin", date: new Date().toLocaleDateString() }
+    ];
+
+    let resources = [
+        { id: 1, title: "Math Past Paper 2023", type: "pdf", uploader: "Mr. Zulu" },
+        { id: 2, title: "Physics Notes Ch1", type: "docx", uploader: "Mrs. Banda" }
+    ];
+
+    // --- AUTHENTICATION FLOWS ---
+
+    function showLoginModal(type) {
+        document.getElementById('loginModal').classList.remove('hidden');
+        document.getElementById('loginModal').dataset.type = type;
+        document.getElementById('loginTitle').innerText = type === 'admin' ? "Admin Login" : "Student Login";
+    }
+
+    function showTeacherAccess() {
+        document.getElementById('teacherAccessModal').classList.remove('hidden');
+        document.getElementById('teacherStep1').classList.remove('hidden');
+        document.getElementById('teacherStep2').classList.add('hidden');
+        document.getElementById('teacherMasterCode').value = '';
+    }
+
+    // New Teacher Logic
+    function verifyTeacherCode() {
+        const code = document.getElementById('teacherMasterCode').value;
+        if(code === "teacher2025") {
+            document.getElementById('teacherStep1').classList.add('hidden');
+            document.getElementById('teacherStep2').classList.remove('hidden');
+        } else {
+            alert("Invalid Master Code");
+        }
+    }
+
+    function completeTeacherLogin() {
+        const name = document.getElementById('teacherName').value;
+        const subject = document.getElementById('teacherSubject').value;
+        if(!name || !subject) return alert("Please fill details");
+
+        currentUser = { id: Date.now(), name: name, role: 'teacher', subject: subject };
+        enterDashboard();
+        closeModals();
+    }
+
+    // Student Registration with Class Password Check
+    function showStudentRegister() {
+        document.getElementById('studentRegModal').classList.remove('hidden');
+        const select = document.getElementById('regClassSelect');
+        select.innerHTML = classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    function registerStudent() {
+        const name = document.getElementById('regName').value;
+        const user = document.getElementById('regUsername').value;
+        const pass = document.getElementById('regPassword').value;
+        const classId = parseInt(document.getElementById('regClassSelect').value);
+        const classPassInput = document.getElementById('regClassPassword').value;
+
+        // Validation
+        const targetClass = classes.find(c => c.id === classId);
+        
+        if(!name || !user || !pass) return alert("Fill all fields");
+        
+        // CRITICAL: Check Class Password
+        if(classPassInput !== targetClass.password) {
+            alert(`Incorrect password for ${targetClass.name}. Please ask your teacher.`);
+            return;
+        }
+
+        users.push({
+            id: Date.now(),
+            name: name,
+            username: user,
+            password: pass,
+            role: 'student',
+            classId: classId,
+            isOnline: true
+        });
+
+        alert("Registration Successful! Please Login.");
+        closeModals();
+        showLoginModal('student');
+    }
+
+    function processLogin() {
+        const u = document.getElementById('loginUser').value;
+        const p = document.getElementById('loginPass').value;
+        const type = document.getElementById('loginModal').dataset.type;
+
+        const found = users.find(user => user.username === u && user.password === p && user.role === type);
+
+        if(found) {
+            currentUser = found;
+            currentUser.isOnline = true;
+            enterDashboard();
+            closeModals();
+        } else {
+            alert("Invalid Credentials");
+        }
+    }
+
+    function logout() {
+        if(currentUser) currentUser.isOnline = false;
+        currentUser = null;
+        document.getElementById('mainDashboard').classList.add('hidden');
+        document.getElementById('landingPage').classList.remove('hidden');
+        document.getElementById('app').classList.remove('bg-gray-100');
+    }
+
+    // --- DASHBOARD LOGIC ---
+
+    function enterDashboard() {
+        document.getElementById('landingPage').classList.add('hidden');
+        document.getElementById('mainDashboard').classList.remove('hidden');
+        document.getElementById('mainDashboard').classList.add('flex');
+        
+        // Set User Info
+        let roleDisplay = currentUser.role.toUpperCase();
+        if(currentUser.role === 'teacher') roleDisplay = `Teacher (${currentUser.subject})`;
+        document.getElementById('navUserInfo').innerText = `${currentUser.name} | ${roleDisplay}`;
+
+        // Show/Hide Role Specifics
+        if(currentUser.role === 'admin') {
+            document.getElementById('adminControls').classList.remove('hidden');
+            document.getElementById('btnPostNews').classList.remove('hidden');
+        } else if (currentUser.role === 'teacher') {
+            document.getElementById('adminControls').classList.add('hidden');
+            document.getElementById('btnPostNews').classList.remove('hidden');
+            document.getElementById('btnUploadRes').classList.remove('hidden');
+        } else {
+            document.getElementById('adminControls').classList.add('hidden');
+            document.getElementById('btnPostNews').classList.add('hidden');
+            document.getElementById('btnUploadRes').classList.add('hidden');
+        }
+
+        switchTab('news');
+        updateOnlineCount();
+    }
+
+    function switchTab(tab) {
+        // Hide all views
+        ['news', 'resources', 'active', 'admin-classes', 'admin-users'].forEach(t => {
+            const el = document.getElementById(`view-${t}`);
+            if(el) el.classList.add('hidden');
+            
+            const btn = document.getElementById(`tab-${t}`);
+            if(btn) {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('text-gray-600');
+            }
+        });
+
+        // Show active
+        document.getElementById(`view-${tab}`).classList.remove('hidden');
+        const activeBtn = document.getElementById(`tab-${tab}`);
+        if(activeBtn) {
+            activeBtn.classList.add('bg-primary', 'text-white');
+            activeBtn.classList.remove('text-gray-600');
+        }
+
+        // Refresh Data
+        if(tab === 'news') renderNews();
+        if(tab === 'resources') renderResources();
+        if(tab === 'active') renderActiveStudents();
+        if(tab === 'admin-classes') renderClassTable();
+        if(tab === 'admin-users') renderUserTable();
+    }
+
+    // --- FEATURE IMPLEMENTATIONS ---
+
+    // 1. News
+    function renderNews() {
+        const container = document.getElementById('newsFeed');
+        container.innerHTML = news.map(n => `
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 border-primary">
+                <h3 class="font-bold text-xl">${n.title}</h3>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">${n.content}</p>
+                <div class="mt-4 text-xs text-gray-400">Posted by ${n.author} • ${n.date}</div>
+            </div>
+        `).join('');
+    }
+
+    function openNewsModal() { document.getElementById('newsModal').classList.remove('hidden'); }
+    
+    function postNews() {
+        const title = document.getElementById('newsTitle').value;
+        const body = document.getElementById('newsBody').value;
+        if(title && body) {
+            news.unshift({ id: Date.now(), title, content: body, author: currentUser.name, date: new Date().toLocaleDateString() });
+            closeModals();
+            renderNews();
+        }
+    }
+
+    // 2. Class Management (ADMIN)
+    function renderClassTable() {
+        const tbody = document.getElementById('classTableBody');
+        tbody.innerHTML = classes.map(c => {
+            const count = users.filter(u => u.classId === c.id).length;
+            return `
+            <tr>
+                <td class="px-6 py-4 font-medium">${c.name}</td>
+                <td class="px-6 py-4 font-mono text-red-500">${c.password}</td>
+                <td class="px-6 py-4">${count} students</td>
+                <td class="px-6 py-4 text-right">
+                    <button onclick="editClass(${c.id})" class="text-blue-500 hover:text-blue-700 mr-3"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteClass(${c.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    function openClassModal(id = null) {
+        document.getElementById('classModal').classList.remove('hidden');
+        if(id) {
+            const c = classes.find(x => x.id === id);
+            document.getElementById('classId').value = c.id;
+            document.getElementById('classNameInput').value = c.name;
+            document.getElementById('classPassInput').value = c.password;
+        } else {
+            document.getElementById('classId').value = '';
+            document.getElementById('classNameInput').value = '';
+            document.getElementById('classPassInput').value = '';
+        }
+    }
+
+    function saveClass() {
+        const id = document.getElementById('classId').value;
+        const name = document.getElementById('classNameInput').value;
+        const pass = document.getElementById('classPassInput').value;
+
+        if(!name || !pass) return alert("All fields required");
+
+        if(id) {
+            // Edit
+            const idx = classes.findIndex(c => c.id == id);
+            classes[idx].name = name;
+            classes[idx].password = pass;
+        } else {
+            // Create
+            classes.push({ id: Date.now(), name, password: pass });
+        }
+        closeModals();
+        renderClassTable();
+    }
+
+    function deleteClass(id) {
+        if(confirm("Are you sure? This might affect students in this class.")) {
+            classes = classes.filter(c => c.id !== id);
+            renderClassTable();
+        }
+    }
+
+    function editClass(id) { openClassModal(id); }
+
+    // 3. Active Students
+    function renderActiveStudents() {
+        const container = document.getElementById('activeStudentsContainer');
+        
+        // Group by Class
+        let html = '';
+        classes.forEach(c => {
+            const onlineInClass = users.filter(u => u.classId === c.id && u.isOnline);
+            if(onlineInClass.length > 0) {
+                html += `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-primary">${c.name}</h3>
+                    <div class="flex flex-wrap gap-4">
+                        ${onlineInClass.map(u => `
+                            <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg online-indicator relative">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">${u.name[0]}</div>
+                                <span class="text-sm font-medium">${u.name}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            }
+        });
+
+        if(html === '') html = '<div class="text-gray-400">No students currently online.</div>';
+        container.innerHTML = html;
+    }
+
+    function updateOnlineCount() {
+        const count = users.filter(u => u.isOnline).length; // Simulating only current user + any dummy online
+        document.getElementById('activeCount').innerText = count + (currentUser ? 0 : 0); 
+    }
+
+    // 4. Resources (Basic Impl)
+    function renderResources() {
+        const container = document.getElementById('resourceGrid');
+        const filter = document.getElementById('searchRes').value.toLowerCase();
+        
+        container.innerHTML = resources
+            .filter(r => r.title.toLowerCase().includes(filter))
+            .map(r => `
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-4">
+                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-red-500 text-xl">
+                    <i class="fas fa-file-${r.type === 'pdf' ? 'pdf' : 'alt'}"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold">${r.title}</h4>
+                    <p class="text-xs text-gray-500">By ${r.uploader}</p>
+                </div>
+                <button class="text-primary hover:text-secondary"><i class="fas fa-download"></i></button>
+            </div>
+        `).join('');
+    }
+
+    // Utilities
+    function closeModals() {
+        document.querySelectorAll('.fixed').forEach(m => {
+            if(!m.classList.contains('hidden')) m.classList.add('hidden');
+        });
+    }
+
+    function renderUserTable() {
+        const tbody = document.getElementById('userTableBody');
+        tbody.innerHTML = users.map(u => {
+            const cName = u.classId ? classes.find(c => c.id === u.classId)?.name : '-';
+            return `<tr>
+                <td class="px-6 py-4">${u.name}</td>
+                <td class="px-6 py-4">${u.role}</td>
+                <td class="px-6 py-4">${cName || 'N/A'}</td>
+                <td class="px-6 py-4 text-right"><button class="text-red-500">Block</button></td>
+            </tr>`;
+        }).join('');
+    }
+
+</script>
+</body>
+</html>
